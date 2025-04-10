@@ -1,0 +1,171 @@
+CREATE DATABASE OLA;
+
+USE OLA ;
+
+-- NOTE :ENUM FULL FORM =>"Enumerated" DEFINE DATATYPE 
+CREATE TABLE Drivers (
+    DriverID INT PRIMARY KEY AUTO_INCREMENT,
+    FirstName VARCHAR(50) NOT NULL,
+    LastName VARCHAR(50) NOT NULL,
+    Phone VARCHAR(15) UNIQUE NOT NULL,
+    City VARCHAR(50) NOT NULL,
+    VehicleType ENUM('Sedan', 'Hatchback', 'SUV') NOT NULL,
+    Rating DECIMAL(2,1) CHECK (Rating BETWEEN 0 AND 5)
+);
+INSERT INTO Drivers (FirstName, LastName, Phone, City, VehicleType, Rating) VALUES
+('Ravi', 'Sharma', '9876543210', 'Delhi', 'Sedan', 4.5),
+('Amit', 'Kumar', '8765432109', 'Mumbai', 'Hatchback', 4.2),
+('Suresh', 'Yadav', '7654321098', 'Bangalore', 'SUV', 4.8),
+('Pooja', 'Verma', '6543210987', 'Chennai', 'Sedan', 4.1),
+('Neha', 'Singh', '5432109876', 'Hyderabad', 'Hatchback', 3.9),
+('Vikas', 'Patel', '4321098765', 'Kolkata', 'SUV', 4.7),
+('Manoj', 'Joshi', '3210987654', 'Pune', 'Sedan', 4.3),
+('Kiran', 'Reddy', '2109876543', 'Ahmedabad', 'Hatchback', 4.0),
+('Ramesh', 'Gupta', '1098765432', 'Jaipur', 'SUV', 4.6),
+('Sunita', 'Mishra', '9988776655', 'Lucknow', 'Sedan', 4.4);
+
+
+-- 2
+CREATE TABLE Riders (
+    RiderID INT PRIMARY KEY AUTO_INCREMENT,
+    FirstName VARCHAR(50) NOT NULL,
+    LastName VARCHAR(50) NOT NULL,
+    Phone VARCHAR(15) UNIQUE NOT NULL,
+    City VARCHAR(50) NOT NULL,
+    JoinDate DATE NOT NULL
+);
+INSERT INTO Riders (FirstName, LastName, Phone, City, JoinDate) VALUES
+('Amit', 'Sharma', '9876543210', 'Delhi', '2023-01-15'),
+('Priya', 'Singh', '8765432109', 'Mumbai', '2022-11-20'),
+('Rohan', 'Verma', '7654321098', 'Bangalore', '2023-05-10'),
+('Neha', 'Yadav', '6543210987', 'Chennai', '2021-09-25'),
+('Vikram', 'Patel', '5432109876', 'Hyderabad', '2023-03-05'),
+('Kiran', 'Reddy', '4321098765', 'Kolkata', '2022-07-18'),
+('Manish', 'Joshi', '3210987654', 'Pune', '2021-12-30'),
+('Anjali', 'Gupta', '2109876543', 'Ahmedabad', '2023-06-12'),
+('Suresh', 'Mishra', '1098765432', 'Jaipur', '2022-02-28'),
+('Pooja', 'Chauhan', '9988776655', 'Lucknow', '2023-08-22');
+
+
+ -- 3
+CREATE TABLE RIDES (
+    RIDEID INT PRIMARY KEY AUTO_INCREMENT,
+    RIDERID INT NOT NULL,
+    DRIVERID INT NOT NULL,
+    RIDEDATE DATETIME NOT NULL,
+    PICKUPLOCATION VARCHAR(100) NOT NULL,
+    DROPLOCATION VARCHAR(100) NOT NULL,
+    DISTANCE DECIMAL(5,2) CHECK (DISTANCE >= 0),
+    FARE DECIMAL(10,2) CHECK (FARE >= 0),
+    RIDESTATUS ENUM("COMPLETED", "CANCELLED", "ONGOING") NOT NULL,
+    FOREIGN KEY (RIDERID) REFERENCES RIDERS(RIDERID) ON DELETE CASCADE,
+    FOREIGN KEY (DRIVERID) REFERENCES DRIVERS(DRIVERID) ON DELETE CASCADE
+);
+INSERT INTO RIDES (RIDERID, DRIVERID, RIDEDATE, PICKUPLOCATION, DROPLOCATION, DISTANCE, FARE, RIDESTATUS) VALUES
+(1, 3, '2024-03-10 08:30:00', 'Connaught Place, Delhi', 'DLF Cyber City, Gurgaon', 25.5, 350.00, 'COMPLETED'),
+(2, 5, '2024-03-11 10:00:00', 'Bandra, Mumbai', 'Andheri, Mumbai', 12.3, 180.50, 'COMPLETED'),
+(3, 1, '2024-03-12 15:45:00', 'MG Road, Bangalore', 'Electronic City, Bangalore', 20.7, 250.75, 'CANCELLED'),
+(4, 4, '2024-03-13 18:15:00', 'T Nagar, Chennai', 'OMR Road, Chennai', 14.2, 200.00, 'ONGOING'),
+(5, 2, '2024-03-14 09:00:00', 'Gachibowli, Hyderabad', 'Hitech City, Hyderabad', 10.5, 160.25, 'COMPLETED'),
+(6, 6, '2024-03-15 11:20:00', 'Park Street, Kolkata', 'Salt Lake City, Kolkata', 8.8, 120.00, 'CANCELLED'),
+(7, 8, '2024-03-16 16:10:00', 'FC Road, Pune', 'Hinjewadi, Pune', 22.0, 300.00, 'COMPLETED'),
+(8, 7, '2024-03-17 19:30:00', 'C.G. Road, Ahmedabad', 'Gandhinagar, Gujarat', 18.5, 275.50, 'COMPLETED'),
+(9, 9, '2024-03-18 07:45:00', 'MI Road, Jaipur', 'Mansarovar, Jaipur', 11.0, 150.75, 'ONGOING'),
+(10, 10, '2024-03-19 21:00:00', 'Hazratganj, Lucknow', 'Alambagh, Lucknow', 9.5, 140.00, 'COMPLETED');
+
+-- 4
+CREATE TABLE Payments (
+    PaymentID INT PRIMARY KEY AUTO_INCREMENT,
+    RideID INT NOT NULL,
+    PaymentMethod ENUM('Card', 'Cash', 'Wallet') NOT NULL,
+    Amount DECIMAL(10,2) CHECK (Amount >= 0),
+    PaymentDate DATETIME NOT NULL,
+    FOREIGN KEY (RideID) REFERENCES Rides(RideID) ON DELETE CASCADE
+);
+INSERT INTO Payments (RideID, PaymentMethod, Amount, PaymentDate) VALUES
+(1, 'Card', 350.00, '2024-03-10 08:45:00'),
+(2, 'Cash', 180.50, '2024-03-11 10:15:00'),
+(3, 'Wallet', 250.75, '2024-03-12 15:50:00'),
+(4, 'Card', 200.00, '2024-03-13 18:30:00'),
+(5, 'Cash', 160.25, '2024-03-14 09:10:00'),
+(6, 'Wallet', 120.00, '2024-03-15 11:30:00'),
+(7, 'Card', 300.00, '2024-03-16 16:25:00'),
+(8, 'Cash', 275.50, '2024-03-17 19:45:00'),
+(9, 'Wallet', 150.75, '2024-03-18 08:00:00'),
+(10, 'Card', 140.00, '2024-03-19 21:20:00');
+
+
+-- 1Retrieve the names and contact details of all drivers with a rating of 4.5 or higher.
+SELECT FirstName, LastName, Phone 
+FROM Drivers 
+WHERE Rating >= 4.5;
+
+-- 2. Find the total number of rides completed by each driver.
+SELECT DriverID, COUNT(*) AS TotalRides 
+FROM Rides 
+WHERE RideStatus = 'COMPLETED' 
+GROUP BY DriverID;
+
+
+-- 3. List all riders who have never booked a ride.
+SELECT Riders.RiderID, Riders.FirstName, Riders.LastName, Riders.Phone 
+FROM Riders 
+LEFT JOIN Rides ON Riders.RiderID = Rides.RiderID 
+WHERE Rides.RideID IS NULL;
+
+
+-- 4. Calculate the total earnings of each driver from completed rides.
+SELECT DriverID, SUM(Fare) AS TotalEarnings 
+FROM Rides 
+WHERE RideStatus = 'COMPLETED' 
+GROUP BY DriverID;
+
+-- 5. Retrieve the most recent ride for each rider.
+SELECT Rides.RiderID, Rides.RideID, Rides.RideDate 
+FROM Rides 
+WHERE RideDate = (SELECT MAX(RideDate) FROM Rides R WHERE R.RiderID = Rides.RiderID);
+
+-- 6. Count the number of rides taken in each city.
+SELECT Riders.City, COUNT(Rides.RideID) AS TotalRides 
+FROM Riders 
+JOIN Rides ON Riders.RiderID = Rides.RiderID 
+GROUP BY Riders.City;
+
+
+-- 7. List all rides where the distance was greater than 20 km.alter
+SELECT * FROM rides where distance > 20 ;
+
+
+-- 8. Identify the most preferred payment method.
+SELECT PaymentMethod, COUNT(*) AS UsageCount 
+FROM Payments 
+GROUP BY PaymentMethod 
+ORDER BY UsageCount DESC 
+LIMIT 1;
+
+-- 9. Find the top 3 highest-earning drivers.
+SELECT DriverID, SUM(Fare) AS TotalEarnings 
+FROM Rides 
+WHERE RideStatus = 'COMPLETED' 
+GROUP BY DriverID 
+ORDER BY TotalEarnings DESC 
+LIMIT 3;
+
+-- 10. Retrieve details of all cancelled rides along with the rider's and driver's names
+SELECT 
+    R.RideID, 
+    R.RideDate, 
+    R.PickupLocation, 
+    R.DropLocation, 
+    R.Distance, 
+    R.Fare, 
+    Rd.FirstName AS RiderFirstName, 
+    Rd.LastName AS RiderLastName, 
+    D.FirstName AS DriverFirstName, 
+    D.LastName AS DriverLastName
+FROM Rides R
+JOIN Riders Rd ON R.RiderID = Rd.RiderID
+JOIN Drivers D ON R.DriverID = D.DriverID
+WHERE R.RideStatus = 'CANCELLED';
+
+

@@ -1,0 +1,171 @@
+CREATE DATABASE HR_Management;
+USE HR_Management;
+CREATE TABLE Employees (
+    EmployeeID INT PRIMARY KEY,
+    FirstName VARCHAR(50),
+    LastName VARCHAR(50),
+    Email VARCHAR(100),
+    Phone VARCHAR(20),
+    HireDate DATE,
+   
+    ManagerID INT,
+    Salary DECIMAL(10,2),
+   
+    FOREIGN KEY (ManagerID) REFERENCES Employees(EmployeeID)
+);
+ALTER TABLE Employees ADD COLUMN DepartmentID INT;
+ALTER TABLE Employees ADD FOREIGN KEY (DepartmentID) REFERENCES Departments(DepartmentID);
+
+select * from employees;
+
+UPDATE Employees 
+SET DepartmentID = CASE 
+    WHEN EmployeeID IN (101, 102) THEN 1  -- HR Department
+    WHEN EmployeeID IN (103, 104, 109) THEN 2  -- IT Department
+    WHEN EmployeeID IN (105, 106, 110) THEN 3  -- Finance Department
+    WHEN EmployeeID IN (107, 108) THEN 4  -- Marketing Department
+END
+WHERE EmployeeID IN (101, 102, 103, 104, 105, 106, 107, 108, 109, 110);
+
+
+INSERT INTO Employees (EmployeeID, FirstName, LastName, Email, Phone, HireDate, ManagerID, Salary) VALUES
+(101, 'Amit', 'Sharma', 'amit.sharma@email.com', '9876543210', '2022-06-15', NULL, 75000),  -- Manager (No manager)
+(102, 'Priya', 'Verma', 'priya.verma@email.com', '9876543211', '2023-02-10', 101, 80000),
+(103, 'Rahul', 'Mehta', 'rahul.mehta@email.com', '9876543212', '2021-12-05', 101, 90000),
+(104, 'Neha', 'Kapoor', 'neha.kapoor@email.com', '9876543213', '2023-07-20', 102, 70000),
+(105, 'Vikas', 'Singh', 'vikas.singh@email.com', '9876543214', '2020-09-10', 103, 85000),
+(106, 'Sneha', 'Rao', 'sneha.rao@email.com', '9876543215', '2023-03-25', 104, 78000),
+(107, 'Kunal', 'Patel', 'kunal.patel@email.com', '9876543216', '2023-08-01', 105, 72000),
+(108, 'Anjali', 'Nair', 'anjali.nair@email.com', '9876543217', '2022-11-30', 106, 88000),
+(109, 'Rohan', 'Yadav', 'rohan.yadav@email.com', '9876543218', '2023-05-15', 107, 74000),
+(110, 'Meera', 'Iyer', 'meera.iyer@email.com', '9876543219', '2024-01-10', 108, 71000);
+
+
+CREATE TABLE Departments (
+    DepartmentID INT PRIMARY KEY,
+    DepartmentName VARCHAR(100),
+    ManagerID INT,
+    FOREIGN KEY (ManagerID) REFERENCES Employees(EmployeeID)
+);
+INSERT INTO Departments (DepartmentID, DepartmentName, ManagerID) VALUES
+(1, 'HR', 101),
+(2, 'IT', 102),
+(3, 'Finance', 103),
+(4, 'Marketing', 104),
+(5, 'Sales', 105),
+(6, 'Operations', 106),
+(7, 'Customer Support', 107),
+(8, 'Legal', 108),
+(9, 'R&D', 109),
+(10, 'Admin', 110);
+
+
+CREATE TABLE PerformanceReviews (
+    ReviewID INT PRIMARY KEY,
+    EmployeeID INT,
+    ReviewDate DATE,
+    PerformanceScore VARCHAR(20),
+    Comments TEXT,
+    FOREIGN KEY (EmployeeID) REFERENCES Employees(EmployeeID)
+);
+INSERT INTO PerformanceReviews (ReviewID, EmployeeID, ReviewDate, PerformanceScore, Comments) VALUES
+(1, 101, '2023-06-20', 'Excellent', 'Great leadership skills'),
+(2, 102, '2024-02-10', 'Good', 'Efficient in tasks'),
+(3, 103, '2023-12-15', 'Average', 'Needs improvement'),
+(4, 104, '2024-01-05', 'Excellent', 'Creative ideas'),
+(5, 105, '2023-07-10', 'Good', 'Great teamwork'),
+(6, 106, '2024-03-25', 'Poor', 'Lacks focus'),
+(7, 107, '2023-09-12', 'Excellent', 'Outstanding performance'),
+(8, 108, '2024-01-30', 'Good', 'Meets expectations'),
+(9, 109, '2023-11-20', 'Average', 'Consistent work'),
+(10, 110, '2024-02-15', 'Excellent', 'Very proactive');
+
+
+CREATE TABLE Payroll (
+    PayrollID INT PRIMARY KEY,
+    EmployeeID INT,
+    PaymentDate DATE,
+    Amount DECIMAL(10,2),
+    PaymentMethod VARCHAR(50),
+    FOREIGN KEY (EmployeeID) REFERENCES Employees(EmployeeID)
+);
+INSERT INTO Payroll (PayrollID, EmployeeID, PaymentDate, Amount, PaymentMethod) VALUES
+(1, 101, '2024-03-01', 75000, 'Bank Transfer'),
+(2, 102, '2024-03-01', 80000, 'Check'),
+(3, 103, '2024-03-01', 90000, 'Bank Transfer'),
+(4, 104, '2024-03-01', 70000, 'Check'),
+(5, 105, '2024-03-01', 85000, 'Bank Transfer'),
+(6, 106, '2024-03-01', 78000, 'Check'),
+(7, 107, '2024-03-01', 72000, 'Bank Transfer'),
+(8, 108, '2024-03-01', 88000, 'Check'),
+(9, 109, '2024-03-01', 74000, 'Bank Transfer'),
+(10, 110, '2024-03-01', 71000, 'Check');
+
+-- 1. Retrieve the names and contact details of employees hired after January 1, 2023.
+SELECT FirstName, LastName, Email, Phone
+FROM Employees
+WHERE HireDate > '2023-01-01';
+
+
+-- 2. Find the total payroll amount paid to each department.
+SELECT d.DepartmentID, d.DepartmentName, SUM(p.Amount) AS TotalPayroll  
+FROM Payroll p  
+JOIN Employees e ON p.EmployeeID = e.EmployeeID  
+JOIN Departments d ON e.DepartmentID = d.DepartmentID  
+GROUP BY d.DepartmentID, d.DepartmentName;
+
+
+-- 3. List all employees who have not been assigned a manager.
+SELECT EmployeeID, FirstName, LastName
+FROM Employees
+WHERE ManagerID IS NULL;
+
+
+-- 4. Retrieve the highest salary in each department along with the employee’s name.
+SELECT e.EmployeeID, e.FirstName, e.LastName, e.Salary, d.DepartmentName
+FROM Employees e
+JOIN Departments d ON e.DepartmentID = d.DepartmentID
+WHERE e.Salary = (SELECT MAX(Salary) FROM Employees WHERE DepartmentID = d.DepartmentID);
+
+
+-- 5. Find the most recent performance review for each employee.
+SELECT pr.EmployeeID, e.FirstName, e.LastName, pr.ReviewDate, pr.PerformanceScore, pr.Comments
+FROM PerformanceReviews pr
+JOIN Employees e ON pr.EmployeeID = e.EmployeeID
+WHERE pr.ReviewDate = (SELECT MAX(ReviewDate) FROM PerformanceReviews WHERE EmployeeID = pr.EmployeeID);
+
+
+-- 6. Count the number of employees in each department.
+SELECT d.DepartmentID, d.DepartmentName, COUNT(e.EmployeeID) AS EmployeeCount
+FROM Employees e
+JOIN Departments d ON e.DepartmentID = d.DepartmentID
+GROUP BY d.DepartmentID, d.DepartmentName;
+
+
+-- 7. List all employees who have received a performance score of "Excellent." Identify the
+-- most frequently used payment method in payroll.
+SELECT e.EmployeeID, e.FirstName, e.LastName, pr.PerformanceScore
+FROM Employees e
+JOIN PerformanceReviews pr ON e.EmployeeID = pr.EmployeeID
+WHERE pr.PerformanceScore = 'Excellent';
+
+-- 8. Retrieve the top 5 highest-paid employees along with their departments.
+SELECT PaymentMethod, COUNT(*) AS Frequency
+FROM Payroll
+GROUP BY PaymentMethod
+ORDER BY Frequency DESC
+LIMIT 1;
+
+-- 9. Show details of all employees who report directly to a specific manager (e.g.,
+-- ManagerID = 101).
+SELECT e.EmployeeID, e.FirstName, e.LastName, e.Salary, d.DepartmentName
+FROM Employees e
+JOIN Departments d ON e.DepartmentID = d.DepartmentID
+ORDER BY e.Salary DESC
+LIMIT 5;
+
+
+
+
+
+
