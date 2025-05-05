@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Recipe Finder App</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <h2>🍽 Recipe Finder</h2>
+
+  <input type="text" id="ingredientInput" placeholder="Enter ingredients (comma separated)">
+  
+  <select id="typeFilter">
+    <option value="All">All</option>
+    <option value="Breakfast">Breakfast</option>
+    <option value="Lunch">Lunch</option>
+    <option value="Dinner">Dinner</option>
+  </select>
+
+  <button onclick="searchRecipes()">Search</button>
+
+  <div id="recipeList"></div>
+
+  <script src="App.js"></script>
+</body>
+</html>
